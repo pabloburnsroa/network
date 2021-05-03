@@ -1,0 +1,68 @@
+{% extends "network/layout.html" %}
+
+{% load static %}
+
+{% block body %}
+
+{% block script %}
+    <!-- Link to Javascript -->
+    <script src="{% static 'network/network.js' %}"></script>
+{% endblock %}
+
+<div id="profile">
+  <div>Profile: {{ username.username }}</div>
+  <div>Followers: {{ followers }}</div>
+  <div>Follows: {{ following }}</div>
+  <div>
+    <form action="{% url 'profile' username.id %}" method="POST">
+      <!-- Follow/Unfollow button only if any other user -->
+      {% if user.id != username.id %}
+        {% csrf_token %}
+        {% if button == "Follow" %}
+        <button type="submit" value="Follow" name="button" class="btn btn-primary ml-2">Follow</button>
+        {% else %}
+        <button type="submit" value="Unfollow" name="button" class="btn btn-primary ml-2">Unfollow</button>
+        {% endif %}
+      {% else %}
+      {% endif %}
+    </form>
+
+  </div>
+
+</div>
+
+<div>
+  {% for post in page_obj %}
+      <div class="border border-light rounded p-3" style="margin: 10px;">
+      <h4> <a href="{% url 'profile' post.user.id %}">{{ post.user }}</a></h4>
+      <!-- Show edit btn if user logged in is the owner of the post -->
+      {% if post.user.id == user.id %}
+      <div class="text-primary" id="edit-{{post.id}}" onclick="edit('{{ post.id }}')">Edit</div>
+      {% else %}
+      {% endif %}
+      <div id="post-{{post.id}}" class="post">{{ post.post }}</div>
+      <!-- Edit textarea displayed only if edit btn is clicked -->
+      <textarea style="display: none;" class="form-control mb-2" name="edit-textarea" data-id="{{post.id}}" id="edit-text-{{post.id}}">{{post.post}}</textarea>
+      <button data-id="{{post.id}}" style="display: none;" id="save-btn-{{post.id}}" class="btn btn-primary">Save</button>
+      <div>{{ post.timestamp }}</div>
+      <button class="btn mr-1 d-inline-block" style="background-color:white; border-color: red;" id="like-btn-{{post.id}}" onclick="like('{{ post.id }}')"></button> 
+      <div id="like-count-{{post.id}}" class="d-inline-block">{{post.likes}}</div>
+      </div>
+  {% endfor %}
+
+  
+  <nav>
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_next %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a></li>
+      {% endif %}
+      {% if page_obj.has_previous %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a></li>
+      {% endif %}    
+    </ul>
+  </nav>
+
+</div>
+
+{% endblock %}
+

@@ -1,0 +1,36 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+
+
+{% block body %}
+
+{% block script %}
+    <!-- Link to Javascript -->
+    <script src="{% static 'network/network.js' %}"></script>
+{% endblock %}
+
+<!-- All posts page and new post form -->
+<div>
+  {% for post in page_obj %}
+    <div class="border border-light rounded p-3" style="margin: 10px;">
+      <h4> <a href="{% url 'profile' post.user.id %}">{{ post.user }}</a></h4>
+      <div>{{ post.post }}</div>
+      <div>{{ post.timestamp }}</div>
+    </div>
+  {% empty %}
+    <li>no posts</li>
+  {% endfor %}
+</div>
+
+{% if page_obj.has_next %}
+  <a href="?page={{ page_obj.next_page_number }}">next</a>
+{% endif %}
+
+{% if page_obj.has_previous %}
+  <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+{% endif %}
+
+{% endblock %}
+
+
